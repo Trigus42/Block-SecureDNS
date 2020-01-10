@@ -27,10 +27,5 @@ Generated using lists from SDNS-Resolvers-Lists.list
 ### Create a cronjob:
 *Upates every sunday at 00:00*
 ```
-00 00 7 * * /usr/bin/python3 /etc/pihole/scripts/SDNS-BlockList.py -f /etc/pihole/scripts/sdns_resolvers_lists.list -hn -o > /etc/pihole/SDNS-Hostnames.list
-```
-### Update dnsmasq:
-In /etc/dnsmasq.d/SDNS.conf
-```
-addn-hosts=/etc/pihole/SDNS-Hostnames.list
+00 00 7 * *  /usr/local/bin/pihole -b $(/usr/bin/python3 /etc/pihole/scripts/SDNS-BlockList.py -f /etc/pihole/scripts/sdns_resolvers_lists.list -hn -o)
 ```
