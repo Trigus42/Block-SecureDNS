@@ -30,7 +30,7 @@ Generated using lists from SDNS-Resolvers-Lists.list
 00 00 7 * * /usr/bin/python3 /etc/pihole/scripts/SDNS-BlockList.py -f /etc/pihole/scripts/sdns_resolvers_lists.list -hn -o > /etc/pihole/SDNS-Hostnames.list
 ```
 ### Update dnsmasq:
-In /etc/dnsmasq.d/01-pihole.conf
+In /etc/dnsmasq.d/SDNS.conf
 ```
 addn-hosts=/etc/pihole/SDNS-Hostnames.list
 ```
