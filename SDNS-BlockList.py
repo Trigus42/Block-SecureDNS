@@ -12,7 +12,7 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
     domains = []
     ips = []
 
-    https_url_re = compile(r"https*:\/\/[a-zA-Z0-9+&@#\/%=~_|$?!:,.]+")
+    https_url_re = compile(r"https*:\/\/[a-zA-Z0-9+&@#\/%=~_|$?!:,.-]+")
 
     # Download
     try:
@@ -35,7 +35,9 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
                         domain = domain_from_string(match)
                         for x in domain:
                             domains.append(x.lower()) if (
-                                x and x.lower() not in domains and x not in exclude
+                                x
+                                and x.lower() not in domains
+                                and x.lower() not in exclude
                             ) else None
     else:
         for line in lines:
@@ -46,7 +48,7 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
                 ) else None
 
     if reverse or "IPs" in type:
-        rev = do_reverse(type, domains, ips)
+        rev = do_reverse(type, domains, ips, exclude)
         domains.extend(rev[0])
         ips.extend(rev[1])
 
@@ -81,13 +83,15 @@ def get_from_stamp(url, type="Domains", reverse=False):
             domain = rm_port(
                 parameters.hostname if (parameters.hostname) else parameters.path
             )
-            domains.append(domain) if (domain and domain not in domains) else None
+            domains.append(domain) if (
+                domain and domain not in domains and domain not in exclude
+            ) else None
         if "IPs" in type:
             ip = rm_port(parameters.address)
             ips.append(ip) if (ip and ip not in ips) else None
 
     if reverse:
-        rev = do_reverse(type, domains, ips)
+        rev = do_reverse(type, domains, ips, exclude)
         domains.extend(rev[0])
         ips.extend(rev[1])
 
@@ -102,7 +106,7 @@ def get_from_stamp(url, type="Domains", reverse=False):
 
 def domain_from_string(string, min_sub="1", max_sub=""):
     domain_re = compile(
-        r"(?=.{2,255}$)(?=[a-zA-Z])(?!\-)(?:(?!\.)[A-Za-z0-9]{1,63}\.){"
+        r"(?=.{2,255}$)(?=[a-zA-Z])(?!\-)(?:(?!\.)[A-Za-z0-9-]{1,63}\.){"
         + str(min_sub)
         + ","
         + str(max_sub)
@@ -111,7 +115,7 @@ def domain_from_string(string, min_sub="1", max_sub=""):
     return domain_re.findall(string)
 
 
-def do_reverse(type, domains=[], ips=[]):
+def do_reverse(type, domains=[], ips=[], exclude=[]):
     domains_ex = []
     ips_ex = []
     domain_info = None
@@ -139,14 +143,14 @@ def do_reverse(type, domains=[], ips=[]):
         if "Domains" in type:
             # Domain
             domains_ex.append(ip_info[0]) if (
-                ip_info[0] and ip_info[0] not in domains_ex
+                ip_info[0] and ip_info[0] not in domains_ex and ip_info[0]
             ) else None
             # Alias (list)
             for x in ip_info[1]:
                 domains_ex.append(x) if (x and x not in domains_ex) else None
 
     for x in domains_ex:
-        domains.append(x) if (x and x not in domains) else None
+        domains.append(x) if (x and x not in domains and x not in exclude) else None
     for x in ips_ex:
         ips.append(x) if (x and x not in ips) else None
 
@@ -252,6 +256,7 @@ Arguments:
 '-dn': Get Domains (Default)
 '-o': Only print results
 '-r': Lookup IPs/Aliases for found Domains; Domains/Aliases for found IPs (takes a while)
+'-e exap.le,dns.google,test.net': Exclude following domains 
  
 Required Modules:
 Preinstalled: 'urllib', 're', 'os', 'subprocess', 'sys'
@@ -324,6 +329,10 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
 
     if "-e" in arguments:
         exclude = arguments[arguments.index("-e") + 1].split(",")
+        arguments.remove(arguments[arguments.index("-e") + 1])
+        arguments.remove("-e")
+    else:
+        exclude = []
 
     option = compile(r"-.*")
     for x in arguments:
@@ -359,13 +368,13 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
     ips = []
     if format == "stamp":
         for url in urls:
-            lists = get_from_stamp(url, extract, reverse)
+            lists = get_from_stamp(url, extract, reverse, exclude)
             domains.extend(lists[0])
             ips.extend(lists[1])
 
     elif format == "direct":
         for url in urls:
-            lists = get_domains(url, extract, reverse)
+            lists = get_domains(url, extract, reverse, exclude)
             domains.extend(lists[0])
             ips.extend(lists[1])
 
