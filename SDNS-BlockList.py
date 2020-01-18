@@ -64,7 +64,7 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
 # Return IPs and domains
 
 
-def get_from_stamp(url, type="Domains", reverse=False):
+def get_from_stamp(url, type="Domains", reverse=False, exclude=[]):
     count_stamps = 0
     domains = []
     ips = []
