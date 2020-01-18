@@ -13,6 +13,7 @@ Arguments:
 '-dn': Get Domains (Default)  
 '-o': Only print results  
 '-r': Lookup IPs/Aliases for found Domains; Domains/Aliases for found IPs (takes a while)  
+'-e exap.le,dns.google,test.net': Exclude following domains  
 
 Required Modules:  
 Preinstalled: 'urllib', 're', 'os', 'subprocess', 'sys'  
@@ -26,6 +27,7 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md
 ```
 SDNS-BlockList.py -d -dn  
 SDNS-BlockList.py -ip -dn https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v2/public-resolvers.md
+SDNS-BlockList.py -d -e dns.google,dns.adguard.com -r
 ```
 
 ### SDNS-Hostnames.list:
