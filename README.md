@@ -41,5 +41,5 @@ Generated using lists from SDNS-Resolvers-Lists.list
 ### Create a cronjob:
 *Upates every sunday at 00:00*
 ```
-00 00 7 * * /usr/local/bin/pihole -b $(/usr/bin/python3 /home/pi/SDNS-BlockList.py -o) && /usr/local/bin/pihole -b $(/usr/bin/python3 /home/pi/SDNS-BlockList.py -d -o)
+00 00 7 * * /usr/local/bin/pihole -b $(/usr/bin/python3 /root/SDNS-BlockList.py -o) && /usr/local/bin/pihole -b $(/usr/bin/python3 /root/SDNS-BlockList.py -d -o)
 ```
