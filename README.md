@@ -8,34 +8,33 @@ Use: $python SDNS-BlockList.py <arguments> <Resolvers_List_URLs>
 Arguments:  
 '-y': Overwrite existing lists  
 '-f': Use URLs from file  
-'-d': File already contains domains  
-'-ip': Get IPs  
-'-dn': Get Domains (Default)  
+'-s': Extract domains from SDNS stamps (Default)  
+'-d': Extract domains directly  
+'-dn': Return domains (Default)  
+'-ip': Resolve domains to return IPs  
 '-o': Only print results  
-'-r': Lookup IPs/Aliases for found Domains; Domains/Aliases for found IPs (takes a while)  
+'-r': Lookup IPs/aliases for found domains; domains/aliases for found IPs (takes a while)  
 '-e exap.le,dns.google,test.net': Exclude following domains  
 
-Required Modules:  
-Preinstalled: 'urllib', 're', 'os', 'subprocess', 'sys'  
-Manual install: 'dnsstamps'  
+Required Modules: 'dnsstamps'  
 
 Default Lists:  
-SDNS Stamps: https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v2/public-resolvers.md  
+SDNS stamps: https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md  
 Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md
 
 ### Example use:
 ```
 SDNS-BlockList.py -d -dn  
-SDNS-BlockList.py -ip -dn https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v2/public-resolvers.md
+SDNS-BlockList.py -ip -dn https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md
 SDNS-BlockList.py -d -e dns.google,dns.adguard.com -r
 ```
 
 ### SDNS-Hostnames.list:
-A list of SecureDNS Server hostnames.
+A list of SecureDNS server hostnames.
 Generated using lists from SDNS-Resolvers-Lists.list
 
 ### SDNS-IPs.list:
-A list of SecureDNS Server IPs.
+A list of SecureDNS server IPs.
 Generated using lists from SDNS-Resolvers-Lists.list
 
 ## Example: Use script with Pi-Hole
