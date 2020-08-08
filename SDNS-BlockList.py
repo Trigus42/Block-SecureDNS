@@ -245,25 +245,24 @@ if __name__ == "__main__":
     except IndexError:
         input(
             """\nSDNS-BlockList: Extract domains from SDNS stamp containing files
-Tested with Python 3.8 and dnsstamps 1.3.0\n
-Use: $python SDNS-BlockList.py <arguments> <Resolvers_List_URLs>
+Tested with Python 3.8 and dnsstamps 1.3.0
+Use: $python SDNS-BlockList.py <Resolvers_List_URLs>
 
-Arguments:  
+Arguments:
 '-y': Overwrite existing lists
 '-f': Use URLs from file
-'-d': File already contains domains
-'-ip': Get IPs
-'-dn': Get Domains (Default)
+'-s': Extract domains from SDNS stamps (Default)
+'-d': Extract domains directly
+'-dn': Return domains (Default)
+'-ip': Resolve domains to return IPs
 '-o': Only print results
-'-r': Lookup IPs/Aliases for found Domains; Domains/Aliases for found IPs (takes a while)
-'-e exap.le,dns.google,test.net': Exclude following domains 
- 
-Required Modules:
-Preinstalled: 'urllib', 're', 'os', 'subprocess', 'sys'
-Manual install: 'dnsstamps'
+'-r': Lookup IPs/aliases for found domains; domains/aliases for found IPs (takes a while)
+'-e': Exclude following domains
+
+Required Modules: 'dnsstamps'
 
 Default Lists:
-SDNS Stamps: https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v2/public-resolvers.md
+SDNS stamps: https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md
 Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
         )
         exit()
@@ -359,7 +358,7 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
                 ["https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"]
                 if (format == "direct")
                 else [
-                    "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v2/public-resolvers.md"
+                    "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"
                 ]
             )
 
