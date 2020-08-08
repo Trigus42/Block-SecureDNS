@@ -14,7 +14,7 @@ Arguments:
 '-ip': Resolve domains to return IPs  
 '-o': Only print results  
 '-r': Lookup IPs/aliases for found domains; domains/aliases for found IPs (takes a while)  
-'-e exap.le,dns.google,test.net': Exclude following domains  
+'-e': Exclude following domains  
 
 Required Modules: 'dnsstamps'  
 
