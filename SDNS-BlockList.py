@@ -11,6 +11,9 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
     count_domains = 0
     domains = []
     ips = []
+    
+    #Not SDNS domains to exclude by default
+    exclude.extend(["github.com", "imaal.byu.edu", "commons.host"])
 
     https_url_re = compile(r"https*:\/\/[a-zA-Z0-9+&@#\/%=~_|$?!:,.-]+")
 
