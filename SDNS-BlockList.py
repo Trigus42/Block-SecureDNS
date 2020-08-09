@@ -13,7 +13,7 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
     ips = []
     
     #Not SDNS domains to exclude by default
-    exclude.extend(["github.com", "imaal.byu.edu", "commons.host"])
+    exclude.extend(["github.com", "imaal.byu.edu", "commons.host", "my.nextdns.io", "blog.cloudflare.com"])
 
     https_url_re = compile(r"https*:\/\/[a-zA-Z0-9+&@#\/%=~_|$?!:,.-]+")
 
@@ -25,23 +25,17 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
         return [[], []]
 
     if url == "https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md":
-        # Inspired by https://gist.github.com/kimbo
         for line in lines:
             if line.startswith("|"):
                 url_col = line.split("|")[2]
                 for match in https_url_re.findall(url_col):
-                    not_sdns = [
-                        "https://blog.cloudflare.com/welcome-hidden-resolver",
-                        "https://my.nextdns.io/start",
-                    ]
-                    if match not in not_sdns:
-                        domain = domain_from_string(match)
-                        for x in domain:
-                            domains.append(x.lower()) if (
-                                x
-                                and x.lower() not in domains
-                                and x.lower() not in exclude
-                            ) else None
+                    domain = domain_from_string(match)
+                    for x in domain:
+                        domains.append(x.lower()) if (
+                            x
+                            and x.lower() not in domains
+                            and x.lower() not in exclude
+                        ) else None
     else:
         for line in lines:
             domain = domain_from_string(line)
