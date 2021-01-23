@@ -2,6 +2,7 @@
 import sys
 import os
 import socket
+import concurrent.futures
 from urllib.request import urlopen
 from re import findall, compile, match
 from subprocess import check_call, CalledProcessError
@@ -117,34 +118,47 @@ def do_reverse(type, domains=[], ips=[], exclude=[]):
     ips_ex = []
     domain_info = None
 
-    for domain in domains:
-        try:
-            domain_info = socket.gethostbyname_ex(domain)
-        except:
-            pass
+    with concurrent.futures.ThreadPoolExecutor(max_workers=(len(ips)+len(domains))) as executor:
+        threads_domains = []
+        threads_ips = []
 
-        if domain_info:
-            # IP (list)
-            if "IPs" in type:
-                for x in domain_info[2]:
-                    ips_ex.append(x) if (x and x not in ips_ex) else None
-            # Alias (list)
-            for x in domain_info[1]:
-                domains_ex.append(x) if (x and x not in domains_ex) else None
+        for domain in domains:
+            thread = executor.submit(socket.gethostbyname_ex, domain)
+            threads_domains.append(thread)
 
-    for ip in ips:
-        try:
-            ip_info = socket.gethostbyaddr(ip)
-        except:
-            pass
-        if "Domains" in type:
-            # Domain
-            domains_ex.append(ip_info[0]) if (
-                ip_info[0] and ip_info[0] not in domains_ex and ip_info[0]
-            ) else None
-            # Alias (list)
-            for x in ip_info[1]:
-                domains_ex.append(x) if (x and x not in domains_ex) else None
+        for thread in concurrent.futures.as_completed(threads_domains):
+            try:
+                domain_info = thread.result()
+            except:
+                pass
+
+            if domain_info:
+                # IP (list)
+                if "IPs" in type:
+                    for x in domain_info[2]:
+                        ips_ex.append(x) if (x and x not in ips_ex) else None
+                # Alias (list)
+                for x in domain_info[1]:
+                    domains_ex.append(x) if (x and x not in domains_ex) else None
+
+        for ip in ips:
+            thread = executor.submit(socket.gethostbyaddr, ip)
+            threads_ips.append(thread)
+            
+        for thread in concurrent.futures.as_completed(threads_ips):
+            try:
+                ip_info = thread.result()
+            except:
+                pass
+
+            if "Domains" in type:
+                # Domain
+                domains_ex.append(ip_info[0]) if (
+                    ip_info[0] and ip_info[0] not in domains_ex and ip_info[0]
+                ) else None
+                # Alias (list)
+                for x in ip_info[1]:
+                    domains_ex.append(x) if (x and x not in domains_ex) else None
 
     for x in domains_ex:
         domains.append(x) if (x and x not in domains and x not in exclude) else None
