@@ -388,6 +388,9 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
             domains.extend(lists[0])
             ips.extend(lists[1])
 
+    ips.sort()
+    domains.sort()
+
     # Save results to file
     if not only_result:
         if not overwrite:
