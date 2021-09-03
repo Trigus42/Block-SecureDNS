@@ -2,7 +2,7 @@
 
 ## SDNS-BlockList.py:
 SDNS-BlockList: Extract domains from SDNS stamp containing files  
-Tested with Python 3.8 and dnsstamps 1.3.0  
+Tested with Python 3.9.1 and dnsstamps 1.3.0  
 Use: $python SDNS-BlockList.py <arguments> <Resolvers_List_URLs>  
 
 Arguments:  
@@ -24,12 +24,15 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md
 
 ### Example use:
 ```
-SDNS-BlockList.py -d -dn  
+# Extract domains from DNS-over-HTTPS.md and public-resolvers.md and all their aliases
+SDNS-BlockList.py -d -s -r
+# Extract domains from DNS-over-HTTPS.md and resolve them to return IPs
 SDNS-BlockList.py -ip -dn https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md
+# Extract domains from DNS-over-HTTPS.md but exclude "dns.google" and "dns.adguard.com"
 SDNS-BlockList.py -d -e dns.google,dns.adguard.com -r
 ```
 
-### SDNS-Hostnames.list:
+### SDNS-Domains.list:
 A list of SecureDNS server hostnames.
 Generated using lists from SDNS-Resolvers-Lists.list
 
@@ -41,5 +44,5 @@ Generated using lists from SDNS-Resolvers-Lists.list
 ### Create a cronjob:
 *Upates every sunday at 00:00*
 ```
-00 00 7 * * /usr/local/bin/pihole -b $(/usr/bin/python3 /root/SDNS-BlockList.py -o) && /usr/local/bin/pihole -b $(/usr/bin/python3 /root/SDNS-BlockList.py -d -o)
+00 00 7 * * /usr/local/bin/pihole -b $(/usr/bin/python3 /root/SDNS-BlockList.py -s -d -o)
 ```

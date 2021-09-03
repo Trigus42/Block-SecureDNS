@@ -26,17 +26,33 @@ def get_domains(url, type="Domains", reverse=False, exclude=[]):
         return [[], []]
 
     if url == "https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md":
-        for line in lines:
+        for index1, line in enumerate(lines):
+            if "# Publicly available servers" in line:
+                for index2, line in enumerate(lines[index1:]):
+                    if "|-------------|----------|---------|---------|" in line:
+                        start_index = (index1+1)+(index2+1)
+                        for index, line in enumerate(lines[start_index:]):
+                            if "#" == line[0]:
+                                end_index = index
+                                break
+                        break
+                break
+
+        for index, line in enumerate(lines[start_index:end_index+1]) if ("start_index" in globals() and "end_index" in globals()) else enumerate(lines):
             if line.startswith("|"):
-                url_col = line.split("|")[2]
-                for match in https_url_re.findall(url_col):
-                    domain = domain_from_string(match)
-                    for x in domain:
-                        domains.append(x.lower()) if (
-                            x
-                            and x.lower() not in domains
-                            and x.lower() not in exclude
-                        ) else None
+                try:
+                    url_col = line.split("|")[2]
+                    for match in https_url_re.findall(url_col):
+                        domain = domain_from_string(match)
+                        for x in domain:
+                            domains.append(x.lower()) if (
+                                x
+                                and x.lower() not in domains
+                                and x.lower() not in exclude
+                            ) else None
+                except IndexError as e:
+                    pass
+
     else:
         for line in lines:
             domain = domain_from_string(line)
@@ -280,16 +296,11 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
 
     # Process arguments
     arguments = sys.argv[1:]
-
-    if "-s" in arguments and "-d" in arguments:
-        print("\nOptions '-s' and '-d' can not be used together")
-        exit()
-    elif "-d" in arguments:
-        format = "direct"
-        arguments.remove("-d")
-    else:
+    format = ""
+    
+    if "-s" in arguments or not "-d" in arguments:    
         arguments.remove("-s") if ("-s" in arguments) else None
-        format = "stamp"
+        format += "stamp"
         # Import or install 'dnsstamps' module
         try:
             from dnsstamps import parse
@@ -297,6 +308,10 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
             print("'dnsstamps' not found, installing 'dnsstamps'")
             install("dnsstamps")
             from dnsstamps import parse
+
+    if "-d" in arguments:
+        format += "direct"
+        arguments.remove("-d")
 
     if "-ip" in arguments and "-dn" not in arguments:
         arguments.remove("-ip")
@@ -365,25 +380,22 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
             urls = arguments
         else:
             # Default URL
-            urls = (
-                ["https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"]
-                if (format == "direct")
-                else [
-                    "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"
-                ]
-            )
+            urls = ((
+                ["https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"], 
+                ["https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"]
+            ))
 
     # Call functions
     domains = []
     ips = []
-    if format == "stamp":
-        for url in urls:
+    if "stamp" in format:
+        for url in urls[1]:
             lists = get_from_stamp(url, extract, reverse, exclude)
             domains.extend(lists[0])
             ips.extend(lists[1])
 
-    elif format == "direct":
-        for url in urls:
+    if "direct" in format:
+        for url in urls[0]:
             lists = get_domains(url, extract, reverse, exclude)
             domains.extend(lists[0])
             ips.extend(lists[1])
