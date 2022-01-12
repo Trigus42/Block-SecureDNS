@@ -400,6 +400,9 @@ Domains: https://raw.githubusercontent.com/wiki/curl/curl/DNS-over-HTTPS.md"""
             domains.extend(lists[0])
             ips.extend(lists[1])
 
+    # Sort and remove duplicates
+    ips = list(dict.fromkeys(ips))
+    domains = list(dict.fromkeys(domains))
     ips.sort()
     domains.sort()
 
